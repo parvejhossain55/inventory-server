@@ -9,9 +9,9 @@ async function getAllCategories(req, res) {
   }
 }
 
-async function getCategoryById(req, res) {
+async function getCategoryBySlug(req, res) {
   try {
-    const category = await CategoryService.getCategoryById(req.params.id);
+    const category = await CategoryService.getCategoryBySlug(req.params.slug);
     res.status(200).json(category);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -62,7 +62,7 @@ async function getAllProductsByCategory(req, res) {
 
 module.exports = {
   getAllCategories,
-  getCategoryById,
+  getCategoryBySlug,
   createCategory,
   updateCategory,
   deleteCategory,

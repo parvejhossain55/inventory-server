@@ -11,12 +11,12 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-exports.getProductById = async (req, res) => {
+exports.getProductBySlug = async (req, res) => {
   try {
-    const { status, message, product } = await ProductService.getProductById(
-      req.params.id
+    const { status, message, product } = await ProductService.getProductBySlug(
+      req.params.slug
     );
-    res.status(status).json({ message, product });
+    res.status(status).json(product);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -26,6 +26,16 @@ exports.getAllProducts = async (req, res) => {
   try {
     const { status, message, products } = await ProductService.getAllProducts();
     res.status(status).json({ message, products });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+exports.getProductByType = async (req, res) => {
+  try {
+    const { status, products, message } =
+      await ProductService.getProductByType();
+    res.status(status).json(products);
   } catch (err) {
     res.status(err.status || 500).json({ message: err.message });
   }
@@ -51,10 +61,15 @@ exports.deleteProductById = async (req, res) => {
 
 exports.filterProducts = async (req, res) => {
   try {
-    const products = await ProductService.filterProducts(req.query);
-    return res.status(products.status).json(products);
+    const filters = req.body;
+    const query = req.query;
+
+    const { status, products, totalPages } =
+      await ProductService.filterProducts(filters, query);
+    res.set("Cross-Origin-Resource-Policy", "cross-origin");
+    res.status(status).json({ products, totalPages });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -67,20 +82,12 @@ exports.getNewArrivals = async (req, res) => {
   }
 };
 
-// controller function to handle requests to retrieve related products
 exports.getRelatedProducts = async (req, res) => {
   try {
-    // call the service function to retrieve
-    const { status, message, product } = await ProductService.getRelatedProducts(
-      req.params
-    );
+    const { status, product } =
+      await ProductService.getRelatedProducts(req.params);
 
-    // send the appropriate response based on the result of the service function call
-    if (status === 200) {
-      res.status(status).json({ message, product });
-    } else {
-      res.status(500).json({ status, message });
-    }
+    res.status(status).json(product);
   } catch (error) {
     res.status(500).json(error);
   }

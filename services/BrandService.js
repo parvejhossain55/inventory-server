@@ -2,11 +2,11 @@ const slugify = require("slugify");
 const Brand = require("../models/BrandModel");
 
 async function getAllBrands() {
-  return await Brand.find();
+  return await Brand.find().select("name slug");
 }
 
-async function getBrandById(id) {
-  return await Brand.findById(id);
+async function getBrandBySlug(slug) {
+  return await Brand.findOne({ slug });
 }
 
 async function createBrand(brandData) {
@@ -44,7 +44,7 @@ async function deleteBrand(role, id) {
 
 module.exports = {
   getAllBrands,
-  getBrandById,
+  getBrandBySlug,
   createBrand,
   updateBrand,
   deleteBrand,

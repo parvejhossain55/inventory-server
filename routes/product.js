@@ -4,7 +4,7 @@ const ProductController = require("../controllers/ProductController");
 const { isAuthenticated, isAdmin } = require("../middleware/isAuthenticated");
 
 // GET products by search query parameters
-router.get("/products/filter-products", ProductController.filterProducts);
+router.post("/products/filter-products", ProductController.filterProducts);
 
 // GET new arrivals
 router.get("/products/new-arrivals", ProductController.getNewArrivals);
@@ -15,11 +15,12 @@ router.get(
   ProductController.getRelatedProducts
 );
 
+router.get("/product-by-type", ProductController.getProductByType)
 // GET all products
 router.get("/products", ProductController.getAllProducts);
 
 // GET product by ID
-router.get("/products/:id", ProductController.getProductById);
+router.get("/products/:slug", ProductController.getProductBySlug);
 
 // POST new product
 router.post("/products",isAuthenticated,isAdmin,ProductController.createProduct);

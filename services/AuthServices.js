@@ -32,22 +32,21 @@ async function register(user) {
         <a href="${process.env.CLIENT_URL}/verify-email?token=${token}">Verify Email</a>
       `;
 
-    SendEmail(email, subject, html)
-      .then(() => {
-        newUser.save();
-        return {
-          status: 201,
-          message:
-            "User registered successfully. Please check your email to verify your account.",
-          user: newUser,
-        };
-      })
-      .catch((error) => {
-        return {
-          status: 500,
-          message: "User registered failed.",
-        };
-      });
+    const result = await SendEmail(email, subject, html);
+
+    if (result.accepted[0] === email) {
+      newUser.save();
+      return {
+        status: 201,
+        message:
+          "User registered successfully. Please check your email to verify your account.",
+        user: newUser,
+      };
+    }
+    return {
+      status: 500,
+      message: "User registered failed.",
+    };
   } catch (err) {
     console.error(err);
     return { status: 500, message: "Server error" };
@@ -95,16 +94,17 @@ async function login({ email, password }) {
     if (!passwordsMatch) {
       return { status: 400, message: "Password does not match" };
     }
-    
-    user.password = undefined;
-    user.createdAt = undefined;
-    user.updatedAt = undefined;
+
+    const userData = {
+      name: user.firstName + " " + user.lastName,
+      role: user.role,
+      email: user.email,
+    };
 
     // Generate a JWT and return it
-    const token = createToken({user});
+    const token = createToken({ _id: user._id});
 
-
-    return { status: 200, message: "Login Successful", token };
+    return { status: 200, message: "Login Successful", token, userData };
   } catch (error) {
     console.error(error);
     return { status: 500, message: "Internal server error" };

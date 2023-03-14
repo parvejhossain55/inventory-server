@@ -16,18 +16,18 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Set up rate limiter
-const limiter = rateLimit({
-  max: 100, // limit each IP to 100 requests per windowMs
-  windowMs: 60 * 60 * 1000, // 1 hour
-  message: "Too many requests from this IP, please try again later",
-});
+// const limiter = rateLimit({
+//   max: 100, // limit each IP to 100 requests per windowMs
+//   windowMs: 60 * 60 * 1000, // 1 hour
+//   message: "Too many requests from this IP, please try again later",
+// });
 
 // Middleware
 app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(compression());
-app.use(limiter);
+// app.use(limiter);
 app.use(express.json()); // Limit request body size to 10kb
 app.use(express.urlencoded({ extended: true }));
 app.use(mongoSanitize());

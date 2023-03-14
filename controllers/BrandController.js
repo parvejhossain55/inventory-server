@@ -9,9 +9,9 @@ async function getAllBrands(req, res) {
   }
 }
 
-async function getBrandById(req, res) {
+async function getBrandBySlug(req, res) {
   try {
-    const brand = await BrandService.getBrandById(req.params.id);
+    const brand = await BrandService.getBrandById(req.params.slug);
     res.status(200).json(brand);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -59,7 +59,7 @@ async function getAllProductsByBrand(req, res) {
 
 module.exports = {
   getAllBrands,
-  getBrandById,
+  getBrandBySlug,
   createBrand,
   updateBrand,
   deleteBrand,

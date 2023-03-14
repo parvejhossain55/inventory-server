@@ -16,7 +16,7 @@ async function getUserCart(userId) {
 }
 
 // add a new product to the current user's cart
-async function addToCart(userId, productId, quantity = 1) {
+async function addToCart(userId, productId, quantity) {
   try {
     const cart = await Cart.findOne({ user: userId });
     const product = await Product.findById(productId);
@@ -46,8 +46,8 @@ async function addToCart(userId, productId, quantity = 1) {
 
     if (existProduct) {
       // If the product already exists in the cart, just update the quantity
-      existProduct.quantity = quantity;
-      existProduct.totalPrice = product.price * quantity;
+      quantity === 1 ? existProduct.quantity++ : existProduct.quantity = quantity;
+      existProduct.totalPrice = product.price * existProduct.quantity;
     } else {
       // If the product doesn't exist in the cart, add it as a new product
       cart.products.push({
@@ -64,7 +64,7 @@ async function addToCart(userId, productId, quantity = 1) {
     // Save the cart to the database
     await cart.save();
 
-    return { status: 201, message: "product added to cart.", cart };
+    return { status: 201, cart };
   } catch (error) {
     console.error(error);
     return { status: 500, message: "Error adding product to cart." };
@@ -178,7 +178,7 @@ async function checkoutCart(userId) {
   }
 }
 
-//
+// get cart summary
 async function getCartSummary(userId) {
   try {
     const cart = await Cart.findOne({ user: userId });

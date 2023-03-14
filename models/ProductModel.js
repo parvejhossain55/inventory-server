@@ -29,6 +29,12 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    type: {
+      type: String,
+      required: true,
+      enum: ["feature", "sale", "new"],
+      default: "new",
+    },
     sold: {
       type: Number,
       default: 0,
@@ -70,17 +76,3 @@ productSchema.index({
 });
 
 module.exports = mongoose.model("Product", productSchema);
-
-// GET /products - retrieves a list of all products
-// GET /products/:id - retrieves details for the product with the specified ID
-// POST /products - creates a new product with the data in the request body
-// PUT /products/:id - updates the product with the specified ID using the data in the request body
-// DELETE /products/:id - deletes the product with the specified ID
-// GET /products/search - searches for products that match the given query parameters (e.g. name, category, brand, price range)
-// GET /products/top-rated - retrieves a list of top-rated products (based on customer reviews or ratings)
-// GET /products/new-arrivals - retrieves a list of newly added products
-// GET /products/sale - retrieves a list of products on sale or with discounts
-// GET /products/bestsellers - retrieves a list of best-selling products
-// GET /products/recommended - retrieves a list of products recommended based on the user's browsing or purchase history
-
-// generate controller and service function. all business logic write in service function and always return object with status and message. controller should be responsible for request and response. destucture status , message in controller where call service function. return product with pagination

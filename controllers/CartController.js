@@ -12,14 +12,14 @@ exports.getCart = async (req, res) => {
 exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    const { status, message, cart } = await cartService.addToCart(
+    const { status, cart } = await cartService.addToCart(
       req.user._id,
       productId,
       quantity
     );
-    res.status(status).json({ message, cart });
+    res.status(status).json(cart);
   } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 

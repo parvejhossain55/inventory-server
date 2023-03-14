@@ -11,7 +11,9 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res
+      .status(500)
+      .json({ message: "Registration failed, Server error", error: err });
   }
 };
 
@@ -29,11 +31,13 @@ exports.verifyEmail = async (req, res) => {
 // user login
 exports.login = async (req, res) => {
   try {
-    const { status, message, token } = await AuthService.login(req.body);
-    res.status(status).json({ message, token });
+    const { status, message, token, userData } = await AuthService.login(
+      req.body
+    );
+    res.status(status).json({ message, user: userData, token });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error });
   }
 };
 

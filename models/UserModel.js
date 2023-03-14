@@ -20,6 +20,25 @@ const shippingAddressSchema = new mongoose.Schema({
   },
 });
 
+const billingAddressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  zip: {
+    type: String,
+    match: /^\d{5}$/,
+  },
+  country: {
+    type: String,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -55,6 +74,7 @@ const userSchema = new mongoose.Schema(
     },
     emailVerified: {
       type: Boolean,
+      default: true, // verification feature update korte hobe
     },
     verificationToken: {
       type: String,
@@ -69,6 +89,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
     shippingAddress: shippingAddressSchema,
+    billingAddress: billingAddressSchema,
   },
   { timestamps: true, versionKey: false }
 );

@@ -14,22 +14,57 @@ exports.createProduct = async (productData) => {
   }
 };
 
-exports.getProductById = async (id) => {
+exports.getProductBySlug = async (slug) => {
   try {
-    const product = await Product.findById(id).populate(["category", "brand"]);
+    const product = await Product.findOne({ slug })
+      .populate("category", "name slug")
+      .populate("brand", "name slug");
 
     if (!product) {
       return { status: 404, message: "Product not found" };
     }
     return { status: 200, message: "Product found", product };
   } catch (error) {
-    return { status: 500, message: "Internal server error" };
+    return { status: 500, message: error.message };
   }
 };
 
 exports.getAllProducts = async () => {
   try {
     const products = await Product.find().populate(["category", "brand"]);
+    return {
+      status: 200,
+      products,
+    };
+  } catch (err) {
+    return { status: 500, message: err.message };
+  }
+};
+
+exports.getProductByType = async () => {
+  try {
+    const feature = await Product.find({ type: "feature" })
+      .limit(8)
+      .sort({ sold: -1 });
+    const newProduct = await Product.find({ type: "new" })
+      .limit(8)
+      .sort({ createdAt: -1 });
+    const topSelling = await Product.find({ type: "topselling" })
+      .limit(8)
+      .sort({ sold: -1 });
+    const bestDeal = await Product.find({ type: "bestdeal" })
+      .limit(5)
+      .sort({ createdAt: -1 });
+    const topRated = await Product.find({ type: "toprated" })
+      .limit(5)
+      .sort({ createdAt: -1 });
+    const products = [
+      ...feature,
+      ...newProduct,
+      ...topSelling,
+      ...bestDeal,
+      ...topRated,
+    ];
     return {
       status: 200,
       products,
@@ -79,32 +114,50 @@ exports.deleteProductById = async (productId, userRole) => {
   }
 };
 
-exports.filterProducts = async (query) => {
+exports.filterProducts = async (filters, query) => {
   try {
-    const { keyword, minPrice, maxPrice, page = 1, limit = 10 } = query;
+    const { category, brand, price, sortBy, perPage } = filters;
 
-    // Construct the filter object based on the query parameters
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 12;
+
     const filter = {};
+    const sort = {};
 
-    if (keyword) {
-      filter.$text = { $search: keyword };
-    }
-    if (minPrice && maxPrice) {
-      filter.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
-    } else if (minPrice) {
-      filter.price = { $gte: parseInt(minPrice) };
-    } else if (maxPrice) {
-      filter.price = { $lte: parseInt(maxPrice) };
+    if (category && category.length > 0) filter.category = { $in: category };
+    if (brand && brand.length > 0) filter.brand = { $in: brand };
+    if (price && price.length > 0)
+      filter.price = { $gte: price[0], $lte: price[1] };
+
+    switch (sortBy) {
+      case "rating":
+        sort.sold = -1;
+        break;
+      case "priceHigh":
+        sort.price = -1;
+        break;
+      case "priceLow":
+        sort.price = 1;
+        break;
+      default:
+        sort.createdAt = -1;
+        break;
     }
 
     const products = await Product.find(filter)
       .populate("category", "name")
       .populate("brand", "name")
       .skip((page - 1) * limit)
+      .sort(sort)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .exec();
+
     const count = await Product.countDocuments(filter);
     const totalPages = Math.ceil(count / limit);
+
+    console.log("products=> ", products);
+    console.log("filter=> ", filter);
+    console.log("count=> ", count);
 
     return {
       status: 200,
@@ -122,7 +175,7 @@ exports.filterProducts = async (query) => {
   }
 };
 
-exports.getNewArrivals = async (page = 1, limit = 10) => {
+exports.getNewArrivals = async () => {
   try {
     const products = await Product.find({})
       .populate(["category", "brand"])
@@ -145,9 +198,7 @@ exports.getRelatedProducts = async ({ productId, categoryId }) => {
     const product = await Product.find({
       category: { $in: [categoryId] },
       _id: { $ne: productId },
-    })
-      .populate(["category", "brand"])
-      .limit(5);
+    }).limit(4);
 
     return {
       status: 200,

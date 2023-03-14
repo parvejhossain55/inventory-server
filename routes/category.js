@@ -3,7 +3,7 @@ const router = express.Router();
 const CategoryController = require("../controllers/CategoryController");
 const { isAuthenticated, isAdmin } = require("../middleware/isAuthenticated");
 
-router.get("/category/:id", CategoryController.getCategoryById);
+router.get("/category/:slug", CategoryController.getCategoryBySlug);
 router.get("/category", CategoryController.getAllCategories);
 router.post("/category", isAuthenticated, CategoryController.createCategory);
 router.put("/category/:id", isAuthenticated, CategoryController.updateCategory);

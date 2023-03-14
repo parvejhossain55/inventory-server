@@ -5,8 +5,8 @@ async function getAllCategories() {
   return await Category.find();
 }
 
-async function getCategoryById(id) {
-  return await Category.findById(id);
+async function getCategoryBySlug(slug) {
+  return await Category.findOne({slug}).select('name slug');
 }
 
 async function createCategory(categoryData) {
@@ -50,7 +50,7 @@ async function getAllProductsByCategory() {
 
 module.exports = {
   getAllCategories,
-  getCategoryById,
+  getCategoryBySlug,
   createCategory,
   updateCategory,
   deleteCategory,

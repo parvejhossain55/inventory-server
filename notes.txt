@@ -1,3 +1,4 @@
 
 backend repo -> https://github.com/parvejhossain55/inventory-server
 frontend repo -> https://github.com/parvejhossain55/inventory-frontend
+live website -> 

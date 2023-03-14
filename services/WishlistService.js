@@ -7,12 +7,18 @@ exports.addToWishlist = async (userId, productId) => {
     let wishlist = await Wishlist.findOne({ user: userId });
 
     if (!wishlist) {
-      wishlist = new Wishlist({ user: userId, products: [] });
+      const wishlist = new Wishlist({
+        user: userId,
+        products: [{ product: productId }],
+      });
+      wishlist.save();
+
+      return { status: 201, message: "Product added to wishlist f", wishlist };
     }
 
     // Check if the product is already in the wishlist
     if (wishlist.products.some((item) => item.product == productId)) {
-      return { status: 400, message: "Product already in wishlist" };
+      return { status: 200, message: "Product already in wishlist" };
     }
 
     // Add the product to the wishlist and save

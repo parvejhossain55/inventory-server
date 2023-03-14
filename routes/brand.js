@@ -3,7 +3,7 @@ const router = express.Router();
 const BrandController = require("../controllers/BrandController");
 const { isAuthenticated, isAdmin } = require("../middleware/isAuthenticated");
 
-router.get("/brand/:id", BrandController.getBrandById);
+router.get("/brand/:slug", BrandController.getBrandBySlug);
 router.get("/brand", BrandController.getAllBrands);
 router.post("/brand", isAuthenticated, BrandController.createBrand);
 router.put("/brand/:id", isAuthenticated, BrandController.updateBrand);

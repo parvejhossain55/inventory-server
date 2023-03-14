@@ -4,7 +4,7 @@ const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   try {
-    const { user } = jwt.verify(token, process.env.JWT_SECRET);
+    const user  = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
