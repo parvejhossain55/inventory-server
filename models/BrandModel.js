@@ -6,7 +6,7 @@ const brandSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      unique: [true, "Brand Name must be unique"],
     },
     slug: {
       type: String,

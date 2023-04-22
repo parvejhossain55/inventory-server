@@ -12,11 +12,9 @@ exports.SendEmail = async (to, subject, html) => {
 
     const mailOptions = { from: process.env.EMAIL_USER, to, subject, html };
 
-    const info = await transporter.sendMail(mailOptions);
-
-    return info;
+    const mail = await transporter.sendMail(mailOptions);
+    return mail;
   } catch (error) {
-    console.error(error);
-    return error;
+    throw new Error("Failed to Send Email");
   }
 };

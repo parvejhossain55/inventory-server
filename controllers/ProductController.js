@@ -1,13 +1,25 @@
 const ProductService = require("../services/ProductService");
 
 exports.createProduct = async (req, res) => {
+  const fileName = req.file?.filename;
   try {
     const { status, message, product } = await ProductService.createProduct(
-      req.body
+      req.body,
+      fileName
     );
     return res.status(status).json({ message, product });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.productByCategory = async (req, res) => {
+  try {
+    const { status, products, count, totalPages } =
+      await ProductService.productByCategory(req.params.slug, req.query);
+    res.status(status).json({ products, count, totalPages });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -41,22 +53,42 @@ exports.getProductByType = async (req, res) => {
   }
 };
 
-exports.updateProductById = async (req, res) => {
-  const { id } = req.params;
-  const { status, message, product } = await ProductService.updateProductById(
-    id,
-    req.body
-  );
-  res.status(status).json({ message, product });
+exports.updateProductBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const filename = req.file?.filename
+    const { status, message, product } =
+      await ProductService.updateProductBySlug(slug, req.body, filename);
+    res.status(status).json({ message, product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.deleteProductById = async (req, res) => {
-  const { id } = req.params;
-  const { role } = req.user;
+  try {
+    const { id } = req.params;
+    const { role } = req.user;
 
-  const { status, message } = await ProductService.deleteProductById(id, role);
+    const { status, message } = await ProductService.deleteProductById(
+      id,
+      role
+    );
 
-  return res.status(status).json({ message });
+    return res.status(status).json({ message });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.searchProduct = async (req, res) => {
+  try {
+    const { status, products, totalPages, count } =
+      await ProductService.searchProduct(req.query);
+    res.status(status).json({ products, totalPages, count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.filterProducts = async (req, res) => {
@@ -84,8 +116,9 @@ exports.getNewArrivals = async (req, res) => {
 
 exports.getRelatedProducts = async (req, res) => {
   try {
-    const { status, product } =
-      await ProductService.getRelatedProducts(req.params);
+    const { status, product } = await ProductService.getRelatedProducts(
+      req.params
+    );
 
     res.status(status).json(product);
   } catch (error) {

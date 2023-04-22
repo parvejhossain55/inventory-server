@@ -21,7 +21,7 @@ async function getCategoryBySlug(req, res) {
 async function createCategory(req, res) {
   try {
     const category = await CategoryService.createCategory(req.body);
-    res.status(201).json(category);
+    res.status(201).json({message: "Category Succesfully Created",category});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

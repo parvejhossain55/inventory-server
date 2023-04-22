@@ -16,7 +16,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
       maxlength: 2000,
     },
+    tags: { type: Array },
     price: {
+      type: Number,
+      required: true,
+    },
+    salePrice: {
       type: Number,
       required: true,
     },
@@ -24,10 +29,9 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    sku: {
+    size: { type: Array },
+    unit: {
       type: String,
-      required: true,
-      unique: true,
     },
     type: {
       type: String,
@@ -39,17 +43,21 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // sku: {
+    //   type: String,
+    //   required: true,
+    //   unique: true,
+    // },
     status: {
       type: String,
       enum: ["draft", "published"],
-      default: true,
+      default: "draft",
     },
-    unit: {
-      type: String,
-    },
-    images: {
-      type: Array,
-    },
+    images: [
+      {
+        type: String,
+      },
+    ],
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,

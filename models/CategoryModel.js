@@ -15,7 +15,7 @@ const categorySchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      // required: true,
     },
     products: [
       {
@@ -24,7 +24,7 @@ const categorySchema = new mongoose.Schema(
       },
     ],
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false}
 );
 
 module.exports = mongoose.model("Category", categorySchema);

@@ -2,8 +2,9 @@ const cartService = require("../services/CartService");
 
 exports.getCart = async (req, res) => {
   try {
-    const { status, cart } = await cartService.getUserCart(req.user._id);
-    res.status(status).json(cart);
+    const { status, products, subtotal, shipping } =
+      await cartService.getUserCart(req.user._id);
+    res.status(status).json({ products, subtotal, shipping });
   } catch (err) {
     res.status(500).json({ status: "error", message: err.message });
   }
@@ -23,28 +24,28 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-exports.removeCartItem = async (req, res) => {
+exports.updateCartQuantity = async (req, res) => {
   try {
-    const { itemId } = req.params;
-    const { status, message, cart } = await cartService.deleteCartItem(
+    const { itemId, quantity } = req.body;
+    const { status, cart } = await cartService.updateCartQuantity(
       req.user._id,
-      itemId
+      itemId,
+      quantity
     );
-    res.status(status).json({ message, cart });
+    res.status(status).json(cart);
   } catch (err) {
     res.status(500).json({ status: "error", message: err.message });
   }
 };
 
-exports.updateCartQuantity = async (req, res) => {
+exports.removeCartItem = async (req, res) => {
   try {
-    const { itemId, quantity } = req.body;
-    const { status, message, cart } = await cartService.updateCartQuantity(
+    const { itemId } = req.params;
+    const { status, cart } = await cartService.removeCartItem(
       req.user._id,
-      itemId,
-      quantity
+      itemId
     );
-    res.status(status).json({ message, cart });
+    res.status(status).json(cart);
   } catch (err) {
     res.status(500).json({ status: "error", message: err.message });
   }
@@ -61,13 +62,52 @@ exports.clearUserCart = async (req, res) => {
 
 exports.checkoutCart = async (req, res) => {
   try {
-    const { status, message, order } = await cartService.checkoutCart(
-      req.user._id
+    const { status, url } = await cartService.checkoutCart(
+      req.user._id,
+      req.body
     );
-    res.status(status).json({ message, order });
+    res.status(status).json({ url });
   } catch (err) {
     res.status(500).json({ status: "error", message: err.message });
   }
+};
+
+exports.checkoutSuccess = async (req, res) => {
+  try {
+    const success_url = await cartService.checkoutSuccess(req.body);
+    res.redirect(success_url);
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
+exports.checkoutCancel = async (req, res) => {
+  try {
+    const cancel = await cartService.checkoutCancel(req.body);
+    res.json({ message: "Payment Canceled", cancel });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
+exports.checkoutFail = async (req, res) => {
+  try {
+    const fail = await cartService.checkoutFail(req.body);
+    res.json({ message: "Payment Failed", fail });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
+exports.checkoutIpn = async (req, res) => {
+  // console.log("params ipn", req.params);
+  // console.log("body ipn", req.body);
+  // try {
+  //   const ipn = await cartService.checkoutIpn(req.body);
+  //   res.json({ message : ipn,  });
+  // } catch (err) {
+  //   res.status(500).json({ status: "error", message: err.message });
+  // }
 };
 
 exports.getCartSummary = async (req, res) => {

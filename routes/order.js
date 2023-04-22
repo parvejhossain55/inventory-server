@@ -3,7 +3,10 @@ const router = express.Router();
 const OrderController = require("../controllers/OrderController");
 const { isAuthenticated } = require("../middleware/isAuthenticated");
 
-router.get("/order", isAuthenticated, OrderController.getAllOrders);
+// router.get("/order", isAuthenticated, OrderController.getAllOrders);
+router.get("/order", (req, res) => {
+  res.redirect("http://google.com");
+});
 router.get("/order/:orderId", OrderController.getOrderById);
 router.put("/order/:orderId", isAuthenticated, OrderController.updateOrder);
 // router.post("/order", OrderController.createOrder);

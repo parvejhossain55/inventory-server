@@ -20,8 +20,11 @@ async function getBrandBySlug(req, res) {
 
 async function createBrand(req, res) {
   try {
-    const brand = await BrandService.createBrand(req.body);
-    res.status(201).json(brand);
+    const { status, message, brand } = await BrandService.createBrand(
+      req.body,
+      req.file?.filename
+    );
+    res.status(status).json({ message, brand });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -29,7 +32,11 @@ async function createBrand(req, res) {
 
 async function updateBrand(req, res) {
   try {
-    const brand = await BrandService.updateBrand(req.params.id, req.body);
+    const brand = await BrandService.updateBrand(
+      req.params.id,
+      req.body,
+      req.file?.filename
+    );
     res.status(200).json(brand);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -33,6 +33,10 @@ const cartSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    couponApplied: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true, versionKey: false }
 );

@@ -102,7 +102,7 @@ async function login({ email, password }) {
     };
 
     // Generate a JWT and return it
-    const token = createToken({ _id: user._id});
+    const token = createToken({ _id: user._id, role: user.role});
 
     return { status: 200, message: "Login Successful", token, userData };
   } catch (error) {

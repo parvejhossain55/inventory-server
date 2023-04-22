@@ -21,6 +21,18 @@ router.delete("/cart", isAuthenticated, CartController.clearUserCart);
 // checkout cart and create order
 router.post("/cart/checkout", isAuthenticated, CartController.checkoutCart);
 
+// checkout success
+router.post("/checkout/success", CartController.checkoutSuccess)
+
+// checkout success
+router.post("/checkout/cancel", CartController.checkoutCancel)
+
+// checkout success
+router.post("/checkout/fail", CartController.checkoutFail)
+
+// checkout success
+router.post("/checkout/ipn", CartController.checkoutIpn)
+
 // cart summary
 router.get("/cart/summary", isAuthenticated, CartController.getCartSummary);
 

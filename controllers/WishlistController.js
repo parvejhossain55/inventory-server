@@ -18,10 +18,10 @@ exports.addToWishlist = async (req, res) => {
 // Get a user's wishlists
 exports.getWishlists = async (req, res) => {
   try {
-    const { status, message, wishlists } = await wishlistService.getWishlists(
+    const { status, products } = await wishlistService.getWishlists(
       req.user._id
     );
-    res.status(status).json(wishlists);
+    res.status(status).json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

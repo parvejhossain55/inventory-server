@@ -34,12 +34,12 @@ exports.addToWishlist = async (userId, productId) => {
 // Get a user's wishlists
 exports.getWishlists = async (userId) => {
   try {
-    const wishlists = await Wishlist.find({ user: userId }).populate(
-      "products.product"
-    );
+    const [wishlists] = await Wishlist.find({ user: userId }).populate("products.product");
+    const {products} = wishlists
+    
     return {
       status: 200,
-      wishlists,
+      products,
     };
   } catch (err) {
     return { status: 500, message: err.message };

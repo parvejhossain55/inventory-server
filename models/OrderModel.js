@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    orderId: { type: String, required: true },
     products: [
       {
         product: {
@@ -24,42 +25,16 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    total: {
-      type: Number,
-      required: true,
-    },
     status: {
       type: String,
       enum: ["pending", "processing", "shipped", "delivered", "canceled"],
       default: "pending",
     },
-    paymentMethod: {
+    note: {
       type: String,
-      enum: ["creditcard", "paypal", "banktransfer"],
-      required: true,
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["paid", "unpaid"],
-      default: "unpaid",
-    },
-    shippingMethod: {
-      type: String,
-      enum: ["standard", "express"],
-      default: "standard",
-    },
-    shippingFee: {
-      type: Number,
-      required: true,
-    },
-    tax: {
-      type: Number,
-      required: true,
-      default: 0,
     },
   },
   { timestamps: true, versionKey: false }
 );
 
 module.exports = mongoose.model("Order", orderSchema);
-
