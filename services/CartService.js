@@ -295,6 +295,8 @@ async function checkoutSuccess(success) {
       card_issuer,
     });
 
+    order.payment = payment._id;
+
     // Update product sold and quantity
     await quantityUpdate(cart);
 

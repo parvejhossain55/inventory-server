@@ -22,7 +22,7 @@ const port = process.env.PORT || 5000;
 //   message: "Too many requests from this IP, please try again later",
 // });
 
-app.use("/images", express.static(__dirname + "/public/uploads"))
+app.use("/images", express.static(__dirname + "/public/uploads"));
 
 // Middleware
 app.use(helmet());
