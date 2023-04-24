@@ -14,7 +14,7 @@ const couponSchema = new mongoose.Schema(
     },
     discountAmount: {
       type: Number,
-      required: true,
+      default: null,
     },
     minPurchase: {
       type: Number,
@@ -28,12 +28,10 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
-    applicableProducts: [
-      {
-        type: String,
-        default : "all",
-      },
-    ],
+    applicableProducts: {
+      type: [String],
+      default: ["all"],
+    },
     conditions: {
       type: String,
     },

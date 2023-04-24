@@ -6,7 +6,7 @@ exports.createCoupon = async (couponData) => {
   try {
     const coupon = new Coupon(couponData);
     await coupon.save();
-    return coupon;
+    return { message: "Coupon Successfully Created" };
   } catch (error) {
     throw new Error(error.message);
   }
