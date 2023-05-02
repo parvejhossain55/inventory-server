@@ -27,7 +27,6 @@ const paymentSchema = new mongoose.Schema(
     bank_tran_id: { type: String },
     card_type: { type: String },
     card_brand: { type: String },
-    card_issuer: { type: String },
   },
   { versionKey: false }
 );

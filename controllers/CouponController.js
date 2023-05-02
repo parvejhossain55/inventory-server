@@ -65,7 +65,7 @@ exports.deleteCouponByCode = async (req, res) => {
     const result = await CouponService.deleteCouponByCode(req.params.code);
     if (!result) {
       return res.status(404).json({ message: "Coupon not found" });
-    }
+    } 
     res.status(200).json({message : "Coupon Successfully Deleted"});
   } catch (error) {
     res.status(500).json({ message: error.message });

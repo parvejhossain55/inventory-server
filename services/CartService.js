@@ -286,13 +286,13 @@ async function checkoutSuccess(success) {
       order: order._id,
       amount,
       store_amount,
-      paymentStatus: status,
+      paymentStatus: status === "VALID" ? "Paid" : "Unpaid",
       tran_id,
       tran_date,
       bank_tran_id,
-      paymentMethod: card_type,
+      paymentMethod: card_issuer,
       card_brand,
-      card_issuer,
+      card_type,
     });
 
     order.payment = payment._id;
