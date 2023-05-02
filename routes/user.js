@@ -24,6 +24,8 @@ router.post("/change-password/:token", UserController.changePassword);
 // Update User Profile
 router.put("/update-profile", isAuthenticated, UserController.updateProfile);
 
+// Get Single User
+router.get("/get-user", isAuthenticated, UserController.getUserById);
 // Check User Is Authenticated
 router.get("/auth-check", isAuthenticated, (req, res) => {
   res.json({ ok: true });

@@ -102,7 +102,7 @@ async function login({ email, password }) {
     };
 
     // Generate a JWT and return it
-    const token = createToken({ _id: user._id, role: user.role});
+    const token = createToken({ _id: user._id, role: user.role });
 
     return { status: 200, message: "Login Successful", token, userData };
   } catch (error) {
@@ -236,6 +236,29 @@ async function UpdateProfile(userId, updatedUser) {
   }
 }
 
+async function getUserById(userId) {
+  try {
+    const user = await User.findById(userId, {
+      firstName: 1,
+      lastName: 1,
+      email: 1,
+      phone: 1,
+    });
+
+    if (!user) {
+      return { status: 400, message: "User Not Found" };
+    }
+
+    return {
+      status: 200,
+      user,
+    };
+  } catch (error) {
+    console.error(err);
+    return { status: 500, message: "Server Error" };
+  }
+}
+
 module.exports = {
   register,
   verifyEmail,
@@ -244,4 +267,5 @@ module.exports = {
   verifyResetToken,
   changePassword,
   UpdateProfile,
+  getUserById,
 };

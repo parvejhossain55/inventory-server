@@ -9,7 +9,5 @@ router.get(
   isAdmin,
   TransactionController.getAllTransaction
 );
-// router.get("/order/:orderId", OrderController.getOrderById);
-// router.patch("/order/:orderId", isAuthenticated, OrderController.updateOrder);
 
 module.exports = router;

@@ -99,3 +99,15 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// get user profile
+exports.getUserById = async (req, res) => {
+  try {
+    let userId = req.user._id;
+    const { status, user } = await AuthService.getUserById(userId);
+
+    res.status(status).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

@@ -35,3 +35,14 @@ exports.updateOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getOrderByUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const order = await OrderService.getOrderByUser(userId);
+
+    res.status(200).json(order);
+  } catch (error) {
+    next(error);
+  }
+};

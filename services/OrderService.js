@@ -52,3 +52,8 @@ exports.updateOrder = async (orderId, updates) => {
     sendError(error.message, 400);
   }
 };
+
+exports.getOrderByUser = async (userId) => {
+  const order = await Order.findOne({ user: userId });
+  return order;
+};
