@@ -14,7 +14,7 @@ exports.getAllOrders = async () => {
 };
 
 exports.getOrderById = async (orderId) => {
-  const order = await Order.findById(orderId);
+  const order = await Order.findOne({ orderId }, { status: 1, _id: 0 });
   return order;
 };
 
