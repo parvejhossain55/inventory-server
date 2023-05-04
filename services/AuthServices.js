@@ -216,14 +216,21 @@ async function UpdateProfile(userId, updatedUser) {
       return { status: 400, message: "User Not Found" };
     }
 
-    if (updatedUser.password) {
-      const hashedPassword = await hashPassword(updatedUser.password);
+    if (updatedUser.newPass) {
+      const hashedPassword = await hashPassword(updatedUser.newPass);
+      updatedUser.newPass = undefined;
+      updatedUser.confPass = undefined;
       updatedUser.password = hashedPassword;
     }
 
     const newUser = await User.findByIdAndUpdate(userId, updatedUser, {
       new: true,
     });
+
+    newUser.password = undefined;
+    newUser.emailVerified = undefined;
+    newUser.createdAt = undefined;
+    newUser.updatedAt = undefined;
 
     return {
       status: 200,
