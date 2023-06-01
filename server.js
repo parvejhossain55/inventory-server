@@ -10,7 +10,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
-const { dbConnection } = require("./config/dbConnection");
+const mongoose = require("mongoose");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -36,9 +36,6 @@ app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
 
-// Connect to database
-dbConnection();
-
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -55,7 +52,21 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+const connectDB = async () => {
+  try {
+    mongoose.set("strictQuery", true);
+    const conn = await mongoose.connect(process.env.DATABASE);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
+// Connect to database
+connectDB().then(() => {
+  // Start server
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 });
