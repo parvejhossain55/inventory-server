@@ -1,6 +1,6 @@
-const fs = require("fs");
-const path = require("path");
+const cloudinary = require("cloudinary");
 const Brand = require("../models/BrandModel");
+const sendError = require("../utils/error");
 
 async function getAllBrands() {
   return await Brand.find().select("name slug image");
@@ -10,52 +10,26 @@ async function getBrandBySlug(slug) {
   return await Brand.findOne({ slug });
 }
 
-async function createBrand(brandData, image) {
+async function createBrand(brandData) {
   try {
-    const brand = await Brand.create({ ...brandData, image });
-    console.log("brand ", brand);
+    const brand = await Brand.create(brandData);
 
     return { status: 201, message: "Brand Created", brand };
   } catch (error) {
-    const filePath = path.join(__dirname, "../", "public", "uploads", image);
-
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return
-      }
-    });
-    return { status: 500, message: "Something Wrong "};
+    sendError(error.message, error.status);
   }
 }
 
-async function updateBrand(id, brandData, image) {
-  const updateBrand = { name: brandData.name };
-
-  if (image) {
-    const filePath = path.join(
-      __dirname,
-      "../",
-      "public",
-      "uploads",
-      brandData.old_img
-    );
-
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    });
-
-    updateBrand.image = image;
+async function updateBrand(id, brandData) {
+  try {
+    const brand = await Brand.findByIdAndUpdate(id, brandData);
+    return brand;
+  } catch (error) {
+    sendError(error.message, error.status);
   }
-
-  const brand = await Brand.findByIdAndUpdate(id, updateBrand);
-  return brand;
 }
 
-async function deleteBrand(role, id) {
+async function deleteBrand(role, id, { public_id }) {
   try {
     if (role !== "admin") {
       return { status: 403, message: "Only admins can delete categories." };
@@ -67,28 +41,11 @@ async function deleteBrand(role, id) {
       return { status: 404, message: "Brand not found" };
     }
 
-    const filePath = path.join(
-      __dirname,
-      "../",
-      "public",
-      "uploads",
-      brand.image
-    );
-
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    });
+    await cloudinary.uploader.destroy(public_id);
 
     return { status: 200, message: "Brand deleted successfully." };
-  } catch (err) {
-    console.error(err);
-    return {
-      status: 500,
-      message: "An error occurred while deleting the Brand.",
-    };
+  } catch (error) {
+    sendError(error.message, error.status);
   }
 }
 

@@ -1,4 +1,5 @@
 const BrandService = require("../services/BrandService");
+const cloudinary = require("cloudinary").v2;
 
 async function getAllBrands(req, res) {
   try {
@@ -18,28 +19,45 @@ async function getBrandBySlug(req, res) {
   }
 }
 
-async function createBrand(req, res) {
+async function createBrand(req, res, next) {
   try {
-    const { status, message, brand } = await BrandService.createBrand(
-      req.body,
-      req.file?.filename
-    );
+    let data = { ...req.body, image: {} };
+
+    if (req?.file) {
+      (data.image.public_id = req.file.cloudinaryId),
+        (data.image.secure_url = req.file.cloudinaryUrl);
+    }
+
+    const { status, message, brand } = await BrandService.createBrand(data);
     res.status(status).json({ message, brand });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 }
 
-async function updateBrand(req, res) {
+async function updateBrand(req, res, next) {
   try {
-    const brand = await BrandService.updateBrand(
-      req.params.id,
-      req.body,
-      req.file?.filename
-    );
+    const { name, slug, public_id, secure_url } = req.body;
+    const data = {};
+    // const data = { name, slug, image: { public_id, secure_url } };
+
+    if (req?.file) {
+      await cloudinary.uploader.destroy(public_id);
+      const imgData = {
+        public_id: req.file.cloudinaryId,
+        secure_url: req.file.cloudinaryUrl,
+      };
+
+      data.image = imgData;
+    }
+
+    data.name = name;
+    data.slug = slug;
+
+    const brand = await BrandService.updateBrand(req.params.id, data);
     res.status(200).json(brand);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 }
 
@@ -47,7 +65,8 @@ async function deleteBrand(req, res) {
   try {
     const { status, message } = await BrandService.deleteBrand(
       req.user.role,
-      req.params.id
+      req.params.id,
+      req.query
     );
     res.status(status).json({ message });
   } catch (err) {
