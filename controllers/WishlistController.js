@@ -1,4 +1,4 @@
-const wishlistService = require("../services/wishlistService");
+const wishlistService = require("../services/WishlistService");
 
 // Add a product to a user's wishlist
 exports.addToWishlist = async (req, res) => {
