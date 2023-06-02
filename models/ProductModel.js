@@ -53,11 +53,10 @@ const productSchema = new mongoose.Schema(
       enum: ["draft", "published"],
       default: "draft",
     },
-    images: [
-      {
-        type: String,
-      },
-    ],
+    image: {
+      public_id: { type: String },
+      secure_url: { type: String },
+    },
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,

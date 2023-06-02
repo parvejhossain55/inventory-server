@@ -1,3 +1,4 @@
+const { deleteFile } = require("../middleware/cloudinaryUploader");
 const BrandService = require("../services/BrandService");
 const cloudinary = require("cloudinary").v2;
 
@@ -37,24 +38,19 @@ async function createBrand(req, res, next) {
 
 async function updateBrand(req, res, next) {
   try {
-    const { name, slug, public_id, secure_url } = req.body;
-    const data = {};
-    // const data = { name, slug, image: { public_id, secure_url } };
+    const { public_id } = req.body;
 
     if (req?.file) {
-      await cloudinary.uploader.destroy(public_id);
+      await deleteFile(public_id);
       const imgData = {
         public_id: req.file.cloudinaryId,
         secure_url: req.file.cloudinaryUrl,
       };
 
-      data.image = imgData;
+      req.body.image = imgData;
     }
 
-    data.name = name;
-    data.slug = slug;
-
-    const brand = await BrandService.updateBrand(req.params.id, data);
+    const brand = await BrandService.updateBrand(req.params.id, req.body);
     res.status(200).json(brand);
   } catch (err) {
     next(err);

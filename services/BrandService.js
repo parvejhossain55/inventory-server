@@ -1,6 +1,7 @@
 const cloudinary = require("cloudinary");
 const Brand = require("../models/BrandModel");
 const sendError = require("../utils/error");
+const { deleteFile } = require("../middleware/cloudinaryUploader");
 
 async function getAllBrands() {
   return await Brand.find().select("name slug image");
@@ -32,7 +33,7 @@ async function updateBrand(id, brandData) {
 async function deleteBrand(role, id, { public_id }) {
   try {
     if (role !== "admin") {
-      return { status: 403, message: "Only admins can delete categories." };
+      return { status: 403, message: "Only admins can delete brands." };
     }
 
     const brand = await Brand.findByIdAndDelete(id);
@@ -41,7 +42,7 @@ async function deleteBrand(role, id, { public_id }) {
       return { status: 404, message: "Brand not found" };
     }
 
-    await cloudinary.uploader.destroy(public_id);
+    await deleteFile(public_id);
 
     return { status: 200, message: "Brand deleted successfully." };
   } catch (error) {

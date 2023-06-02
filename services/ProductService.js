@@ -1,17 +1,17 @@
-const fs = require("fs");
-const path = require("path");
 const Category = require("../models/CategoryModel");
 const Product = require("../models/ProductModel");
+const { deleteFile } = require("../middleware/cloudinaryUploader");
 
-exports.createProduct = async (productData, images) => {
+exports.createProduct = async (productData) => {
   try {
-    const product = await Product.create({ ...productData, images: [images] });
+    const product = await Product.create(productData);
 
-    console.log("product ", product)
-    console.log("value ", Object.values(product).length)
+    // console.log("product ", product);
+    // console.log("value ", Object.values(product).length);
 
-    if (Object.values(product).length < 1)
+    if (Object.values(product).length < 1) {
       return { status: 200, message: "Bad request, Can't create Product" };
+    }
 
     return {
       status: 201,
@@ -19,14 +19,7 @@ exports.createProduct = async (productData, images) => {
       product,
     };
   } catch (error) {
-    const filePath = path.join(__dirname, "../", "public", "uploads", images);
-
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    });
+    await deleteFile(productData.image.public_id);
     return { status: 500, message: "Bad request, can't create product" };
   }
 };
@@ -91,30 +84,11 @@ exports.getProductByType = async () => {
   }
 };
 
-exports.updateProductBySlug = async (slug, data, images) => {
+exports.updateProductBySlug = async (slug, data) => {
   try {
     const product = await Product.findOne({ slug });
     if (!product) {
       return { status: 404, message: "Product not found" };
-    }
-
-    if (images) {
-      const filePath = path.join(
-        __dirname,
-        "../",
-        "public",
-        "uploads",
-        product.images[0]
-      );
-  
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
-  
-      product.images = [images];
     }
 
     product.title = data.title || product.title;
@@ -130,6 +104,9 @@ exports.updateProductBySlug = async (slug, data, images) => {
     product.status = data.status || product.status;
     product.brand = data.brand || product.brand;
     product.category = data.category || product.category;
+    if (data.image) {
+      product.image = data.image;
+    }
 
     await product.save();
     return { status: 200, message: "Product Updated Successfully", product };
@@ -140,34 +117,21 @@ exports.updateProductBySlug = async (slug, data, images) => {
 
 exports.deleteProductById = async (productId, userRole) => {
   try {
-    const product = await Product.findById(productId);
-    if (!product) {
-      return { status: 404, message: "Product not found" };
-    }
-
     if (userRole !== "admin") {
       return {
         status: 403,
         message: "Unauthorized access. Only Admin can delete",
       };
     }
+    const product = await Product.findByIdAndDelete(productId);
+    console.log("product ", product);
 
-    const filePath = path.join(
-      __dirname,
-      "../",
-      "public",
-      "uploads",
-      product.images[0]
-    );
+    if (!product) {
+      return { status: 404, message: "Product not found" };
+    }
 
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    });
+    await deleteFile(product.image.public_id);
 
-    await product.remove();
     return { status: 200, message: "Product deleted successfully" };
   } catch (err) {
     return { status: 500, message: "Internal server error" };
