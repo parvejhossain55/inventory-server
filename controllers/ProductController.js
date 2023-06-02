@@ -1,11 +1,16 @@
+const { deleteFile } = require("../middleware/cloudinaryUploader");
 const ProductService = require("../services/ProductService");
 
 exports.createProduct = async (req, res) => {
-  const fileName = req.file?.filename;
   try {
+    let data = { ...req.body, image: {} };
+
+    if (req?.file) {
+      (data.image.public_id = req.file?.cloudinaryId),
+        (data.image.secure_url = req.file?.cloudinaryUrl);
+    }
     const { status, message, product } = await ProductService.createProduct(
-      req.body,
-      fileName
+      data
     );
     return res.status(status).json({ message, product });
   } catch (error) {
@@ -56,9 +61,20 @@ exports.getProductByType = async (req, res) => {
 exports.updateProductBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const filename = req.file?.filename
+
+    if (req?.file) {
+      await deleteFile(req.body.public_id);
+      const newImg = {
+        public_id: req.file.cloudinaryId,
+        secure_url: req.file.cloudinaryUrl,
+      };
+      req.body.image = newImg;
+    }
+
+    req.body.public_id = null;
+
     const { status, message, product } =
-      await ProductService.updateProductBySlug(slug, req.body, filename);
+      await ProductService.updateProductBySlug(slug, req.body);
     res.status(status).json({ message, product });
   } catch (error) {
     res.status(500).json({ message: error.message });

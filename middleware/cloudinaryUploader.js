@@ -43,4 +43,13 @@ const uploadToCloudinary = (req, res, next) => {
   });
 };
 
-module.exports = { upload, uploadToCloudinary };
+const deleteFile = async (publicId) => {
+  try {
+    const response = await cloudinary.uploader.destroy(publicId);
+    return response;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+module.exports = { upload, uploadToCloudinary, deleteFile };
