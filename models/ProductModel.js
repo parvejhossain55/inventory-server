@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["feature", "sale", "new"],
+      enum: ["feature", "sale", "new", "bestdeal"],
       default: "new",
     },
     sold: {
