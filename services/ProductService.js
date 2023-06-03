@@ -54,19 +54,19 @@ exports.getAllProducts = async () => {
 exports.getProductByType = async () => {
   try {
     const feature = await Product.find({ type: "feature" })
-      .limit(8)
+      .limit(4)
       .sort({ sold: -1 });
     const newProduct = await Product.find({ type: "new" })
-      .limit(8)
+      .limit(4)
       .sort({ createdAt: -1 });
-    const topSelling = await Product.find({ type: "topselling" })
-      .limit(8)
+    const topSelling = await Product.find({ type: "sale" })
+      .limit(4)
       .sort({ sold: -1 });
     const bestDeal = await Product.find({ type: "bestdeal" })
-      .limit(5)
+      .limit(2)
       .sort({ createdAt: -1 });
     const topRated = await Product.find({ type: "toprated" })
-      .limit(5)
+      .limit(1)
       .sort({ createdAt: -1 });
     const products = [
       ...feature,
@@ -168,7 +168,7 @@ exports.productByCategory = async (slug, query) => {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
-      .select("title slug price images");
+      .select("title slug price image");
 
     const count = await Product.find({ category }).countDocuments();
     const totalPages = Math.ceil(count / limit);
