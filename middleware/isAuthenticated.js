@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   // console.log("token", token);
+  if (!token)
+    return res.status(400).json({ message: "Token must be required" });
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET);
